@@ -129,7 +129,7 @@ const TripPlanner: React.FC<TripPlannerProps> = ({ onTripGenerated, onCancel, is
             </div>
             <div>
               <p className="text-sm font-bold text-blue-900">Premium Plan: $2.99</p>
-              <p className="text-xs text-blue-600">You've used your free trip. Payment required on completion.</p>
+              <p className="text-xs text-blue-600">Free trial used. Payment required to unlock your next plan.</p>
             </div>
           </div>
         )}
@@ -152,7 +152,7 @@ const TripPlanner: React.FC<TripPlannerProps> = ({ onTripGenerated, onCancel, is
                   type="text"
                   value={formData.departureLocation}
                   onChange={(e) => setFormData({...formData, departureLocation: e.target.value})}
-                  placeholder="E.g. Kyiv, Ukraine or London, UK"
+                  placeholder="E.g. New York, NY or San Francisco, CA"
                   className="w-full p-5 pl-14 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white outline-none transition-all text-lg font-bold text-slate-800"
                 />
               </div>
@@ -194,7 +194,7 @@ const TripPlanner: React.FC<TripPlannerProps> = ({ onTripGenerated, onCancel, is
                         type="text"
                         value={dest}
                         onChange={(e) => handleDestinationChange(idx, e.target.value)}
-                        placeholder={idx === 0 ? "E.g. Paris" : "Next city (e.g. Rome)"}
+                        placeholder={idx === 0 ? "E.g. London, UK" : "Next city (e.g. Rome)"}
                         className="w-full p-5 pl-14 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white outline-none transition-all text-lg font-bold text-slate-800"
                       />
                     </div>

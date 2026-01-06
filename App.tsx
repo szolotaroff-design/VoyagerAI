@@ -13,15 +13,23 @@ const App: React.FC = () => {
   const [paymentModal, setPaymentModal] = useState<{ amount: string; callback: () => void } | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [freeTrialUsed, setFreeTrialUsed] = useState<boolean>(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('voyager_trips');
-    if (saved) {
+    // Load trips
+    const savedTrips = localStorage.getItem('voyager_trips');
+    if (savedTrips) {
       try {
-        setTrips(JSON.parse(saved));
+        setTrips(JSON.parse(savedTrips));
       } catch (e) {
         console.error("Failed to load trips", e);
       }
+    }
+
+    // Load trial status (independent of trips list)
+    const trialStatus = localStorage.getItem('voyager_free_trial_used');
+    if (trialStatus === 'true') {
+      setFreeTrialUsed(true);
     }
   }, []);
 
@@ -30,9 +38,14 @@ const App: React.FC = () => {
   }, [trips]);
 
   const handleTripGenerated = (newTrip: Trip) => {
-    if (trips.length === 0) {
+    // If trial is NOT used yet, let them through for free once
+    if (!freeTrialUsed) {
       finalizeTripGeneration(newTrip);
+      // Mark trial as used permanently
+      setFreeTrialUsed(true);
+      localStorage.setItem('voyager_free_trial_used', 'true');
     } else {
+      // Trial used, show payment modal
       setPaymentModal({
         amount: '$2.99',
         callback: () => finalizeTripGeneration(newTrip)
@@ -80,8 +93,8 @@ const App: React.FC = () => {
             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
               <i className="fas fa-credit-card text-2xl"></i>
             </div>
-            <h2 className="text-2xl font-black text-slate-800 mb-2">Checkout</h2>
-            <p className="text-slate-500 mb-8">One-time payment to unlock your full itinerary.</p>
+            <h2 className="text-2xl font-black text-slate-800 mb-2">Unlock Journey</h2>
+            <p className="text-slate-500 mb-8">You've reached the limit of free plans. Pay once to unlock this full itinerary forever.</p>
             <div className="bg-slate-50 rounded-2xl p-6 mb-8 flex justify-between items-center">
               <span className="font-bold text-slate-400 uppercase tracking-widest text-xs">Total</span>
               <span className="text-3xl font-black text-slate-800">{paymentModal.amount}</span>
@@ -163,7 +176,7 @@ const App: React.FC = () => {
           <TripPlanner 
             onTripGenerated={handleTripGenerated}
             onCancel={() => setView('DASHBOARD')}
-            isPayable={trips.length > 0}
+            isPayable={freeTrialUsed}
           />
         )}
 
